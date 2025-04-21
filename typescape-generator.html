@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typescape - Custom Typography Generator</title>
+  <style>
+    :root {
+      --color-brown: #635744;
+      --color-cream: #FCF2D1;
+      --color-dark-gray: #383838;
+      --color-light-gray: #F5F2F2;
+      --color-blue: #99ADC7;
+      --color-green: #638F61;
+      --color-salmon: #E3A68A;
+      --color-tan: #D1BF94;
+      --color-mint: #A6C9B5;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      background-color: #f9f9f9;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .controls-container {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .control-panel {
+      flex: 1;
+      min-width: 300px;
+      max-width: 50%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    select, input, textarea {
+      width: 90%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    
+    .color-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s;
+    }
+    
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+    
+    .color-option.selected {
+      border: 2px solid #333;
+      transform: scale(1.1);
+    }
+    
+    .color-brown { background-color: var(--color-brown); }
+    .color-cream { background-color: var(--color-cream); }
+    .color-dark-gray { background-color: var(--color-dark-gray); }
+    .color-light-gray { background-color: var(--color-light-gray); }
+    .color-blue { background-color: var(--color-blue); }
+    .color-green { background-color: var(--color-green); }
+    .color-salmon { background-color: var(--color-salmon); }
+    .color-tan { background-color: var(--color-tan); }
+    .color-mint { background-color: var(--color-mint); }
+    
+    button {
+      background-color: var(--color-dark-gray);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #3a5a8a;
+    }
+    
+    .download-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    .download-buttons button {
+      background-color: var(--color-dark-gray);
+    }
+    
+    .download-buttons button:hover {
+      background-color: #3a5a8a;
+    }
+    
+    .typescape-container {
+      position: relative;
+      width: 50%;
+      overflow: auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .typescape-grid {
+      display: grid;
+      gap: 5px;
+    }
+    
+    .typescape-row {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .letter-container {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .empty-space {
+      width: 100px;
+      height: 100px;
+    }
+    
+    @media (max-width: 768px) {
+      .controls-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TYPESCAPE GENERATOR</h1>
+    
+    <div class="controls-container">
+      <div class="control-panel">
+        <div class="form-group">
+          <label for="lettersPerLine">Letters per line:</label>
+          <select id="lettersPerLine">
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="textInput">Enter text (50 letters max):</label>
+          <textarea id="textInput" maxlength="50" placeholder="Type your phrase here..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Select color:</label>
+          <div class="color-picker">
+            <div class="color-option color-blue selected" data-color="#99ADC7"></div>
+            <div class="color-option color-brown" data-color="#635744"></div>
+            <div class="color-option color-cream" data-color="#FCF2D1"></div>
+            <div class="color-option color-light-gray" data-color="#F5F2F2"></div>
+            <div class="color-option color-dark-gray" data-color="#383838"></div>
+            <div class="color-option color-green" data-color="#638F61"></div>
+            <div class="color-option color-salmon" data-color="#E3A68A"></div>
+            <div class="color-option color-tan" data-color="#D1BF94"></div>
+            <div class="color-option color-mint" data-color="#A6C9B5"></div>
+          </div>
+        </div>
+        
+        <button id="generateButton">Generate Typescape</button>
+        
+        <div class="download-buttons">
+          <button id="downloadSVG">Download SVG</button>
+          <button id="downloadPNG">Download PNG</button>
+        </div>
+      </div>
+      
+      <div class="typescape-container">
+        <div id="typescapeOutput"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // SVG templates for each letter
+    const letterSVGs = {
+      'a': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 57.5"><path class="shape-fill" d="M37,17.5V3a3,3,0,0,0-3-3H3A3,3,0,0,0,0,3V54.5a3,3,0,0,0,3,3H73a3,3,0,0,0,3-3v-31a3,3,0,0,0-3-3H40A3,3,0,0,1,37,17.5Z"/></svg>`,
+      'b': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><path class="shape-fill" d="M73,0H3A3,3,0,0,0,0,3V73a3,3,0,0,0,3,3H34a3,3,0,0,0,3-3V40a3,3,0,0,1,3-3H73a3,3,0,0,0,3-3V3A3,3,0,0,0,73,0Z"/></svg>`,
+'c': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+        <rect class="shape-fill" x="39" width="37" height="76" rx="3" ry="3"/>
+      </svg>`,
+     'd': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+        <rect class="shape-fill" x="39" y="39" width="37" height="37" rx="3" ry="3"/>
+      </svg>`,
+      'e': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 37"><rect class="shape-fill" width="76" height="37" rx="3" ry="3"/></svg>`,
+      'f': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" width="37" height="76" rx="3" ry="3"/><rect class="shape-fill" x="39" width="37" height="37" rx="3" ry="3"/></svg>`,
+      'g': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 57.5 76"><path class="shape-fill" d="M37,36V3a3,3,0,0,0-3-3H3A3,3,0,0,0,0,3V73a3,3,0,0,0,3,3H54.5a3,3,0,0,0,3-3V42a3,3,0,0,0-3-3H40A3,3,0,0,1,37,36Z"/></svg>`,
+      'h': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><path class="shape-fill" d="M0,3V34a3,3,0,0,0,3,3H36a3,3,0,0,1,3,3V73a3,3,0,0,0,3,3H73a3,3,0,0,0,3-3V3a3,3,0,0,0-3-3H3A3,3,0,0,0,0,3Z"/></svg>`,
+      'i': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" width="37" height="37" rx="3" ry="3"/><rect class="shape-fill" x="39" width="37" height="76" rx="3" ry="3"/></svg>`,
+      'j': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" x="39" width="37" height="76" rx="3" ry="3" transform="translate(115 76) rotate(180)"/><rect class="shape-fill" width="37" height="18.5" rx="3" ry="3" transform="translate(37 18.5) rotate(180)"/></svg>`,
+      'k': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+        <rect class="shape-fill" x="39" width="37" height="37" rx="3" ry="3"/>
+      </svg>`,
+      'l': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 18.5"><rect class="shape-fill" width="76" height="18.5" rx="3" ry="3"/></svg>`,
+      'm': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 57.5"><rect class="shape-fill" width="37" height="37" rx="3" ry="3"/><rect class="shape-fill" x="39" width="37" height="57.5" rx="3" ry="3"/></svg>`,
+      'n': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><path class="shape-fill" d="M39,3V36a3,3,0,0,1-3,3H3a3,3,0,0,0-3,3V73a3,3,0,0,0,3,3H73a3,3,0,0,0,3-3V3a3,3,0,0,0-3-3H42A3,3,0,0,0,39,3Z"/></svg>`,
+      'o': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" width="37" height="37" rx="3" ry="3"/><rect class="shape-fill" x="39" y="39" width="37" height="37" rx="3" ry="3"/></svg>`,
+      'p': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" width="37" height="76" rx="3" ry="3"/><rect class="shape-fill" x="39" y="57.5" width="37" height="18.5" rx="3" ry="3"/></svg>`,
+      'q': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" x="48.25" y="9.25" width="37" height="18.5" rx="3" ry="3" transform="translate(85.25 -48.25) rotate(90)"/><rect class="shape-fill" y="39" width="76" height="37" rx="3" ry="3"/></svg>`,
+      'r': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 37"><rect class="shape-fill" width="37" height="37" rx="3" ry="3"/><rect class="shape-fill" x="39" width="37" height="37" rx="3" ry="3"/></svg>`,
+      's': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><rect class="shape-fill" y="39" width="18.5" height="37" rx="3" ry="3"/><rect class="shape-fill" width="76" height="37" rx="3" ry="3"/></svg>`,
+      't': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 57.5"><path class="shape-fill" d="M73,0H3A3,3,0,0,0,0,3V54.5a3,3,0,0,0,3,3H34a3,3,0,0,0,3-3V40a3,3,0,0,1,3-3H73a3,3,0,0,0,3-3V3A3,3,0,0,0,73,0Z"/></svg>`,
+      'u': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76"><path class="shape-fill" d="M37,35.82V3a3,3,0,0,0-3-3H3A3,3,0,0,0,0,3V73a3,3,0,0,0,3,3H73a3,3,0,0,0,3-3V41.82a3,3,0,0,0-3-3H40A3,3,0,0,1,37,35.82Z"/></svg>`,
+   'v': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+        <rect class="shape-fill" y="39" width="37" height="37" rx="3" ry="3"/>
+      </svg>`,
+      'w': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 37"><rect class="shape-fill" width="76" height="37" rx="3" ry="3"/></svg>`,
+      'x': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 57.5"><rect class="shape-fill" width="37" height="57.5" rx="3" ry="3"/><rect class="shape-fill" x="39" width="37" height="37" rx="3" ry="3"/></svg>`,
+      'y': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 57.5 76"><path class="shape-fill" d="M57.5,3a3,3,0,0,0-3-3H3A3,3,0,0,0,0,3V73a3,3,0,0,0,3,3H34a3,3,0,0,0,3-3V40a3,3,0,0,1,3-3H54.5a3,3,0,0,0,3-3Z"/></svg>`,
+      'z': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+        <rect class="shape-fill" width="37" height="37" rx="3" ry="3"/>
+      </svg>`
+    };
+
+    // DOM elements
+    const lettersPerLineSelect = document.getElementById('lettersPerLine');
+    const textInput = document.getElementById('textInput');
+    const generateButton = document.getElementById('generateButton');
+    const downloadSVGButton = document.getElementById('downloadSVG');
+    const downloadPNGButton = document.getElementById('downloadPNG');
+    const typescapeOutput = document.getElementById('typescapeOutput');
+    const colorOptions = document.querySelectorAll('.color-option');
+    
+    // Default settings
+    let selectedColor = '#99ADC7';
+    
+    // Event listeners for color selection
+    colorOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        // Remove selected class from all options
+        colorOptions.forEach(opt => opt.classList.remove('selected'));
+        // Add selected class to clicked option
+        this.classList.add('selected');
+        // Update selected color
+        selectedColor = this.getAttribute('data-color');
+        
+        // Update existing typescape if any
+        if (typescapeOutput.querySelector('.typescape-grid')) {
+          updateTypescapeColor(selectedColor);
+        }
+      });
+    });
+    
+    // Generate typescape on button click
+    generateButton.addEventListener('click', generateTypescape);
+    
+    // Also generate on text input change after a short delay
+    let typingTimer;
+    textInput.addEventListener('input', function() {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(generateTypescape, 500);
+    });
+    
+    // Generate on letters per line change
+    lettersPerLineSelect.addEventListener('change', generateTypescape);
+    
+    // Download SVG
+    downloadSVGButton.addEventListener('click', downloadSVG);
+    
+    // Download PNG
+    downloadPNGButton.addEventListener('click', downloadPNG);
+    
+    // Initial generation
+    generateTypescape();
+    
+    // Functions
+    function generateTypescape() {
+      const text = textInput.value.toLowerCase();
+      const lettersPerLine = parseInt(lettersPerLineSelect.value);
+      
+      // Clear previous output
+      typescapeOutput.innerHTML = '';
+      
+      // Create grid container
+      const grid = document.createElement('div');
+      grid.className = 'typescape-grid';
+      
+      let currentRow = null;
+      let letterCount = 0;
+      
+      // Process each character
+      for (let i = 0; i < text.length; i++) {
+        // Start a new row if needed
+        if (letterCount % lettersPerLine === 0) {
+          currentRow = document.createElement('div');
+          currentRow.className = 'typescape-row';
+          grid.appendChild(currentRow);
+        }
+        
+        const char = text[i];
+        
+        if (char === ' ') {
+          // Handle spaces
+          const spaceDiv = document.createElement('div');
+          spaceDiv.className = 'empty-space';
+          currentRow.appendChild(spaceDiv);
+        } else if (letterSVGs[char]) {
+          // Create container for the letter SVG
+          const letterContainer = document.createElement('div');
+          letterContainer.className = 'letter-container';
+          
+          const svgContent = letterSVGs[char]
+                    .replace(/class="shape-fill"/g, `class="shape-fill" fill="${selectedColor}"`);
+
+          letterContainer.innerHTML = svgContent;
+          
+          currentRow.appendChild(letterContainer);
+        } else {
+          // For unsupported characters, create an empty space
+          const spaceDiv = document.createElement('div');
+          spaceDiv.className = 'empty-space';
+          currentRow.appendChild(spaceDiv);
+        }
+        
+        letterCount++;
+      }
+      
+      typescapeOutput.appendChild(grid);
+    }
+    
+    function updateTypescapeColor(color) {
+      const svgPaths = typescapeOutput.querySelectorAll('svg path, svg rect');
+      svgPaths.forEach(path => {
+        path.setAttribute('fill', color);
+      });
+    }
+    
+    function downloadSVG() {
+      if (!typescapeOutput.querySelector('.typescape-grid')) {
+        alert('Please generate a typescape first');
+        return;
+      }
+      
+      // Create SVG container
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      
+      // Calculate dimensions based on letters per line and rows
+      const rows = typescapeOutput.querySelectorAll('.typescape-row');
+      const lettersPerLine = parseInt(lettersPerLineSelect.value);
+      
+      const letterWidth = 76;  // Based on your SVG viewBox
+      const letterHeight = 76; // Using maximum height
+      const gap = 5;
+      
+      const width = (letterWidth * lettersPerLine) + (gap * (lettersPerLine - 1));
+      const height = (letterHeight * rows.length) + (gap * (rows.length - 1));
+      
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      
+      // Process each row and letter
+      rows.forEach((row, rowIndex) => {
+        const letters = row.querySelectorAll('.letter-container');
+        
+        letters.forEach((letter, letterIndex) => {
+          const originalSvg = letter.querySelector('svg');
+          if (originalSvg) {
+            const viewBox = originalSvg.getAttribute('viewBox');
+            const paths = originalSvg.querySelectorAll('path, rect');
+            
+            // Create a group for this letter
+            const g = document.createElementNS(svgNS, "g");
+            g.setAttribute('transform', `translate(${letterIndex * (letterWidth + gap)}, ${rowIndex * (letterHeight + gap)})`);
+            
+            // Add each path
+            paths.forEach(path => {
+              const newElement = path.tagName === 'path' 
+                ? document.createElementNS(svgNS, "path") 
+                : document.createElementNS(svgNS, "rect");
+              
+              // Copy attributes
+              Array.from(path.attributes).forEach(attr => {
+                if (attr.name !== 'fill') {
+                  newElement.setAttribute(attr.name, attr.value);
+                }
+              });
+              
+              // Set the fill color
+              newElement.setAttribute('fill', selectedColor);
+              
+              g.appendChild(newElement);
+            });
+            
+            svg.appendChild(g);
+          }
+        });
+      });
+      
+      // Convert SVG to string
+      const serializer = new XMLSerializer();
+      let svgString = serializer.serializeToString(svg);
+      
+      // Create download link
+      const blob = new Blob([svgString], {type: 'image/svg+xml'});
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'typescape.svg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    function downloadPNG() {
+      if (!typescapeOutput.querySelector('.typescape-grid')) {
+        alert('Please generate a typescape first');
+        return;
+      }
+      
+      // Create an SVG string
+      let svgContent = '';
+      
+      // Calculate dimensions
+      const rows = typescapeOutput.querySelectorAll('.typescape-row');
+      const lettersPerLine = parseInt(lettersPerLineSelect.value);
+      
+      const letterWidth = 76;  // Based on your SVG viewBox
+      const letterHeight = 76; // Using maximum height
+      const gap = 5;
+      
+      const width = (letterWidth * lettersPerLine) + (gap * (lettersPerLine - 1));
+      const height = (letterHeight * rows.length) + (gap * (rows.length - 1));
+      
+      svgContent = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+      
+      // Process each row and letter
+      rows.forEach((row, rowIndex) => {
+        const letters = row.querySelectorAll('.letter-container');
+        
+        letters.forEach((letter, letterIndex) => {
+          const originalSvg = letter.querySelector('svg');
+          if (originalSvg) {
+            const viewBox = originalSvg.getAttribute('viewBox');
+            const paths = originalSvg.querySelectorAll('path, rect');
+            
+            svgContent += `<g transform="translate(${letterIndex * (letterWidth + gap)}, ${rowIndex * (letterHeight + gap)})">`;
+            
+            paths.forEach(path => {
+              if (path.tagName === 'path') {
+                const d = path.getAttribute('d');
+                svgContent += `<path d="${d}" fill="${selectedColor}"/>`;
+              } else if (path.tagName === 'rect') {
+                const width = path.getAttribute('width');
+                const height = path.getAttribute('height');
+                const x = path.getAttribute('x') || '0';
+                const y = path.getAttribute('y') || '0';
+                const rx = path.getAttribute('rx') || '0';
+                const ry = path.getAttribute('ry') || '0';
+                
+                svgContent += `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${rx}" ry="${ry}" fill="${selectedColor}"/>`;
+              }
+            });
+            
+            svgContent += `</g>`;
+          }
+        });
+      });
+      
+      svgContent += `</svg>`;
+      
+      // Create a canvas
+      const canvas = document.createElement('canvas');
+      const scale = 2; // Scale for better quality
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+      
+      // Create an image from the SVG
+      const img = new Image();
+      const blob = new Blob([svgContent], {type: 'image/svg+xml'});
+      const url = URL.createObjectURL(blob);
+      
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        
+        // Convert canvas to PNG
+        canvas.toBlob(function(blob) {
+          const pngUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = 'typescape.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(pngUrl);
+        }, 'image/png');
+      };
+      
+      img.src = url;
+    }
+  </script>
+</body>
+</html>
